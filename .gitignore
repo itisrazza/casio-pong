@@ -1,0 +1,15 @@
+
+# Build script
+FXSH_Build.bat
+
+# Dunno
+SDCard/
+INIT/
+
+# Breakpoint data
+*.dlr
+*.dlw
+
+# Compiled files and debug information
+*.g1a
+Debug/
