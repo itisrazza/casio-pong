@@ -13,7 +13,7 @@ so far... Because it was simple, and taught me some skills to hopefully write
 more useful and more advanced programs.
 
 ## How do I get it?
-You can download the G1A from [here](Releases/).
+You can download the G1A from [here](https://github.com/thegreatrazz/casio-pong/releases).
 
 You'll need a CASIO fx-9860G or CASIO fx-9750G with the [firmware upgraded](https://blog.easoncxz.com/2012/05/flashing-the-fx-9750gii).
 
