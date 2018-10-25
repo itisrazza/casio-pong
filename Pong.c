@@ -14,7 +14,7 @@ const char false = 0;
 // Paddle properties
 const char PADDLE_SIZE  =  14; // The size of the paddle
 const char PADDLE_THICK =   2; // The thickness of the paddle
-const char PADDLE_STEP  =   1; // How many pixels it moves each time
+const char PADDLE_STEP  =   2; // How many pixels it moves each time
 const char PADDLE_LIMIT =  24; // How far the paddle can go
 
 // Display properties
@@ -67,8 +67,8 @@ void AppQuit()
 void DrawScoreboard()
 {
     char i;
-    unsigned char p1_score[3];
-    unsigned char p2_score[3];
+    unsigned char p1_score[4];  // sentaro21: [3] is short. Increase it to [4].
+    unsigned char p2_score[4];  // tgr:       Make space for NUL as this is a null-term string (I guess)
 
     // Background
     for (i = 0; i < 11; i++)
@@ -225,9 +225,9 @@ void MoveP2()
 
     // Moves P2 towards ball
     if (player2_offset > ball_relative && player2_offset > 0 - PADDLE_LIMIT)
-        player2_offset -= PADDLE_STEP;
+        player2_offset -= 1;
     else if (player2_offset < ball_relative && player2_offset < PADDLE_LIMIT)
-        player2_offset += PADDLE_STEP;
+        player2_offset += 1;
 }
 
 /** Timer #3: Kills and creates a new timer for Player 2 Control */
@@ -240,22 +240,23 @@ void MoveP2_Advance()
 /** Timer #4: Key handling */
 void KeyHandler()
 {
-    if (IsKeyDown(KEY_CTRL_DOWN))
-    {
-        if (player1_offset < PADDLE_LIMIT)
-        player1_offset += PADDLE_STEP;
-    }
+    // sentaro21: IsKeyDown doesn't work as SH4 calcuators
+    // if (IsKeyDown(KEY_CTRL_DOWN))
+    // {
+    //     if (player1_offset < PADDLE_LIMIT)
+    //     player1_offset += PADDLE_STEP;
+    // }
     
-    else if (IsKeyDown(KEY_CTRL_UP))
-    {
-        if (player1_offset > 0 - PADDLE_LIMIT)
-        player1_offset -= PADDLE_STEP;
-    }
+    // else if (IsKeyDown(KEY_CTRL_UP))
+    // {
+    //     if (player1_offset > 0 - PADDLE_LIMIT)
+    //     player1_offset -= PADDLE_STEP;
+    // }
 
-    else if (IsKeyDown(KEY_CTRL_MENU))
-    {
-        AppQuit();
-    }
+    // else if (IsKeyDown(KEY_CTRL_MENU))
+    // {
+    //     AppQuit();
+    // }
 }
 
 /** Timer #5: Unused */
@@ -285,7 +286,7 @@ int AddIn_main(int app_mode, unsigned short strip_no)
     SetTimer(ID_USER_TIMER1, 25, RenderScreen);
     SetTimer(ID_USER_TIMER2, 25, MoveBall);
     MoveP2_Advance(); // This function will start the timer for us
-    SetTimer(ID_USER_TIMER4, 25, KeyHandler);
+    // SetTimer(ID_USER_TIMER4, 25, KeyHandler);
 
     // Set quit handler
     SetQuitHandler(AppQuit);
@@ -293,7 +294,27 @@ int AddIn_main(int app_mode, unsigned short strip_no)
     // The main thread manages the keys
     while (true)
     {
-        GetKey(&key);
+        int keyResp = GetKeyWait(KEYWAIT_HALTON_TIMEROFF, 0, 0, &key);
+    
+        if (keyResp == KEYREP_KEYEVENT)
+        {
+            if (key == KEY_CTRL_DOWN)
+            {
+                if (player1_offset < PADDLE_LIMIT)
+                player1_offset += PADDLE_STEP;
+            }
+            
+            else if (key == KEY_CTRL_UP)
+            {
+                if (player1_offset > 0 - PADDLE_LIMIT)
+                player1_offset -= PADDLE_STEP;
+            }
+
+            else if (key == KEY_CTRL_MENU)
+            {
+                AppQuit();
+            }
+        }
     }
 
     // Good job on somehow breaking the loop. Cleanup time.
